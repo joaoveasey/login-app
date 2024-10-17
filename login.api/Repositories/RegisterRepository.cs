@@ -1,23 +1,43 @@
-﻿using login.api.Interfaces;
+﻿using login.api.Infra;
+using login.api.Interfaces;
 using login.api.Models;
 
 namespace login.api.Repositories
 {
     public class RegisterRepository : IRegisterRepository
     {
-        public Task<Register> AddRegister(Register register)
+        private readonly ApplicationDbContext _context;
+
+        public RegisterRepository(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<Register> DeleteRegister(int id)
+        public async Task<Register> AddRegister(Register register)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(register);
+
+            _context.SaveChanges();
+
+            return register;
         }
 
-        public Task<Register> UpdateRegister(int id, Register register)
+        public async Task<Register> DeleteRegister(int id)
         {
-            throw new NotImplementedException();
+            Register register = _context.Registers.FirstOrDefault(x => x.Id == id);
+
+            _context.Remove(register);
+            _context.SaveChanges();
+
+            return register;
+        }
+
+        public async Task<Register> UpdateRegister(int id, Register register)
+        {
+            _context.Update(register);
+            _context.SaveChanges();
+
+            return register;
         }
     }
 }
